@@ -55,10 +55,3 @@ stringify: ["#" identifier (print "STRINGIFY")]
 
 paste-constituent: [some [not ["#" | dquot | space] skip]]
 paste: [paste-constituent any space "##" any space paste-constituent (print "PASTE")]
-
-print parse "#define FWOOP(...) the bucket^/" definition
-print parse "#define FWOOP(bucket, ...) the bucket^/" definition
-print parse "#define FWOOP(bucket, ...) the bucket ## sponge^/" definition
-
-print parse "#ifdef POOP^/#endif^/" ifdef
-print parse "#ifdef POOP^/you should ignore me^/#endif^/" ifdef
