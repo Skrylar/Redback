@@ -28,6 +28,8 @@ definition: ["#define" space identifier (print "DEFINE/IDENTIFIER")
     thru newline (print "DEFINE/END")]
 undefine: ["#undef" some space identifier newline (print "UNDEFINE")]
 
+ifskip: [["#ifdef" | "#if"] to "#" any [ifskip | ["#else" | "#elif"] to "#"] "#endif" thru newline]
+
 ifdef: [["#ifdef" | "#ifndef"] some space identifier (print "IFDEF/IDENTIFIER") thru newline
    ; TODO check if the identifier is defined
    ; TODO either do a full substitution pass inside this block, or a minimal pass to ignore #ifs and #ifdefs within the block properly
