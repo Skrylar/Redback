@@ -5,6 +5,7 @@ Red []
 ; basic building blocks
 alpha: charset "abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 digit: charset "0123456789"
+digit-nz: charset "123456789"	;TODO replace with append from doc
 alnum: [alpha | digit]
 identifier: [[opt "_" alnum | alpha] any [alnum | "_"]]
 
@@ -48,6 +49,17 @@ ifexpr: ["#if" (print "IF/EXPR") thru newline
    ; TODO either do a full substitution pass inside this block, or a minimal pass to ignore #ifs and #ifdefs within the block properly
    "#endif" thru newline
 ]
+
+integer: [digit-nz any digit (print "INTEGER")]
+; TODO actually escape the character and figure out its value
+character: ["'" ["\" skip | skip] "'" (print "CHARACTER")]
+muldiv: [value-inner any [["*" | "/"] value-inner (print "MULDIV")]]
+addsub: [muldiv any [["+" | "-"] muldiv (print "ADDSUB")]]
+andor: [addsub any [["||" | "&&"] addsub (print "ANDOR")]]
+value-list: [opt [value ["," value]]]
+ifcall: [identifier (print "MACRO") opt ["(" value-list ")" (print "MACRO/CALL")]]
+value-inner: [character | integer | ifcall | "(" (print "SUBEXPR/IN") value ")" (print "SUBEXPR/OUT")]
+value: andor
 
 macro-parameter: [any [not ["," | ")"] skip]]
 macro-parameter-list: ["(" macro-parameter any ["," macro-parameter] ")"]
