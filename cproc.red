@@ -54,13 +54,63 @@ integer: [copy read-value ["0" | digit-nz any digit] (print ["INTEGER" to intege
 
 ; TODO actually escape the character and figure out its value
 character: ["'" ["\" skip | skip] "'" (print "CHARACTER")]
-muldiv: [value-inner any [["*" | "/"] value-inner (print "MULDIV")]]
-addsub: [muldiv any [["+" | "-"] muldiv (print "ADDSUB")]]
-andor: [addsub any [["||" | "&&"] addsub (print "ANDOR")]]
+
+number-stack: make block! 100
+
+pop-number: func [][
+   index: back tail number-stack
+   ret: index/1
+   remove index
+   return ret
+]
+
+muldiv: [value-inner
+   any [set operation ["*" | "/"]
+      (append number-stack operation)
+      value-inner (
+	 rhs: pop-number
+	 operation: pop-number
+	 lhs: pop-number
+	 switch operation [
+	    #"*" [value: lhs * rhs print ["MUL" value]]
+	    #"/" [value: lhs / rhs print ["DIV" value]]
+	 ]
+	 append number-stack value
+      )]]
+
+addsub: [muldiv
+   any [set operation ["+" | "-"]
+      (append number-stack operation)
+      muldiv (
+	 rhs: pop-number
+	 operation: pop-number
+	 lhs: pop-number
+	 switch operation [
+	    #"+" [value: lhs + rhs print ["ADD" value]]
+	    #"-" [value: lhs - rhs print ["SUB" value]]
+	 ]
+	 append number-stack value
+      )]]
+
+
+andor: [addsub
+   any [set operation ["||" | "&&"]
+      (append number-stack operation)
+      addsub (
+	 rhs: pop-number
+	 operation: pop-number
+	 lhs: pop-number
+	 switch operation [
+	    #"|" [value: lhs or rhs print ["OR" value]]
+	    #"&" [value: lhs and rhs print ["AND" value]]
+	 ]
+	 append number-stack value
+      )]]
+
 value-list: [opt [value ["," value]]]
 ifcall: [identifier (print "MACRO") opt ["(" value-list ")" (print "MACRO/CALL")]]
 value-inner: [character | integer | ifcall | "(" (print "SUBEXPR/IN") value ")" (print "SUBEXPR/OUT")]
-value: andor
+value-outer: andor
 
 macro-parameter: [any [not ["," | ")"] skip]]
 macro-parameter-list: ["(" macro-parameter any ["," macro-parameter] ")"]
