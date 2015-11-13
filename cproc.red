@@ -7,7 +7,7 @@ alpha: charset [#"a" - #"z" #"A" - #"Z"]
 digit: charset [#"0" - #"9"]
 digit-nz: charset [#"1" - #"9"]	; TODO replace with append from doc
 alnum: [alpha | digit]
-identifier: [[opt "_" alnum | alpha] any [alnum | "_"]]
+identifier: [["_" alnum | alpha] any [alnum | "_"]]
 
 ; comments are not macro expanded
 linecomment: ["//" thru newline (print "LINE COMMENT")]
