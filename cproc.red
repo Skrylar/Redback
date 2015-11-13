@@ -50,7 +50,8 @@ ifexpr: ["#if" (print "IF/EXPR") thru newline
    "#endif" thru newline
 ]
 
-integer: [digit-nz any digit (print "INTEGER")]
+integer: [copy read-value ["0" | digit-nz any digit] (print ["INTEGER" to integer! read-value] append number-stack to integer! read-value)]
+
 ; TODO actually escape the character and figure out its value
 character: ["'" ["\" skip | skip] "'" (print "CHARACTER")]
 muldiv: [value-inner any [["*" | "/"] value-inner (print "MULDIV")]]
