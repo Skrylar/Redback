@@ -3,9 +3,9 @@ Red []
 ; NB how do we turn off parse's default whitespace skipping?
 
 ; basic building blocks
-alpha: charset "abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-digit: charset "0123456789"
-digit-nz: charset "123456789"	;TODO replace with append from doc
+alpha: charset [#"a" - #"z" #"A" - #"Z"]
+digit: charset [#"0" - #"9"]
+digit-nz: charset [#"1" - #"9"]	; TODO replace with append from doc
 alnum: [alpha | digit]
 identifier: [[opt "_" alnum | alpha] any [alnum | "_"]]
 
