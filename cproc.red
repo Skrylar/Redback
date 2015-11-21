@@ -1,5 +1,7 @@
 Red []
 
+active-definitions: []
+
 ; NB how do we turn off parse's default whitespace skipping?
 
 ; basic building blocks
@@ -90,8 +92,9 @@ addsub: [muldiv
 	    #"-" [value: lhs - rhs print ["SUB" value]]
 	 ]
 	 append number-stack value
-      )]]
-
+      )
+   ]
+]
 
 andor: [addsub
    any [set operation ["||" | "&&"]
@@ -105,10 +108,19 @@ andor: [addsub
 	    #"&" [value: lhs and rhs print ["AND" value]]
 	 ]
 	 append number-stack value
-      )]]
+      )
+   ]
+]
 
-value-list: [opt [value ["," value]]]
-ifcall: [identifier (print "MACRO") opt ["(" value-list ")" (print "MACRO/CALL")]]
+value-list: [opt [value-outer ["," value-outer]]]
+;ifcall: ["defined(" any [not ")" skip] ")" (print "DEFINED/CALL") | identifier (print "MACRO") opt ["(" value-list ")" (print "MACRO/CALL")]]
+ifcall: [value-position: remove copy value identifier (
+      print ["MACRO:" value]
+      value: select active-definitions value
+      insert value-position value
+   ) value-inner
+]
+
 value-inner: [character | integer | ifcall | "(" (print "SUBEXPR/IN") value ")" (print "SUBEXPR/OUT")]
 value-outer: andor
 
