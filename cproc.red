@@ -114,11 +114,26 @@ andor: [addsub
 
 value-list: [opt [value-outer ["," value-outer]]]
 ;ifcall: ["defined(" any [not ")" skip] ")" (print "DEFINED/CALL") | identifier (print "MACRO") opt ["(" value-list ")" (print "MACRO/CALL")]]
-ifcall: [value-position: remove copy value identifier (
+ifcall: [
+   [
+      "defined(" copy value identifier ")" (
+         print ["MACRO DEFINED?" value]
+	 either select active-definitions value [
+	    print "Is defined."
+	    append number-stack 1
+	 ][
+	    print "Is not defined."
+	    append number-stack 0
+         ]
+      )
+   ] |
+   ; look up an indentifier, append its value to the stream,
+   ; then parse the value as though it was always there
+   [copy value identifier value-position: (
       print ["MACRO:" value]
       value: select active-definitions value
       insert value-position value
-   ) value-inner
+   ) value-inner]
 ]
 
 value-inner: [character | integer | ifcall | "(" (print "SUBEXPR/IN") value ")" (print "SUBEXPR/OUT")]
